@@ -4,43 +4,35 @@ class Matrix {
     List<List<Integer>> values;
     int min, max;
     int posX=0, posY = 0;
-    boolean pointX = false;
-
-    Matrix(List<List<Integer>> values) {
-        this.values = values;
-    }
+    List<List<Integer>> columns = new ArrayList<List<Integer>>();
+    Matrix(List<List<Integer>> values) { this.values = values; }
 
     Set<MatrixCoordinate> getSaddlePoints() {
         Set<MatrixCoordinate> sp = new HashSet<>();
 
         for (List<Integer> value : values) {
             max = Collections.max(value);
-            posX = values.indexOf(max);
-            min = findMinValByCol(values);
-            if (max == min){
-                sp.add(new MatrixCoordinate(posX+1, posY+1));
-                pointX = true;
+            posY = value.indexOf(max);
+            findMinValByCol(values);
+
+            for (List<Integer> column : columns) {
+                min = Collections.min(column);
+                if (column.contains(max) && max == min){
+                    posX = column.indexOf(min);
+                    sp.add(new MatrixCoordinate(posX+1, posY+1));
+                }
             }
-            if (pointX){ break; }
         }
         return sp;
     }
 
-    private int findMinValByCol(List<List<Integer>> values) {
-        int currentValue;
+    private void findMinValByCol(List<List<Integer>> values) {
         for (int i = 0; i < values.size(); i++) {
-            currentValue = values.get(0).get(i);
-
+            List<Integer> currentColumn = new ArrayList<>();
             for (int j = 0; j < values.get(i).size(); j++) {
-                if(values.get(j).get(i) < currentValue){
-                    currentValue = values.get(j).get(i);
-                    if (currentValue == max){
-                        posX = j;
-                        return currentValue;
-                    }
-                }
+                currentColumn.add(values.get(j).get(i));
             }
+            columns.add(currentColumn);
         }
-        return 0;
     }
 }
